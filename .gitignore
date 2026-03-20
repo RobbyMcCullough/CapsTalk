@@ -15,6 +15,9 @@ build/*.app
 build/*.exe
 *.spec.bak
 
+# Icon build intermediates (keep the .icns, not the source iconset)
+assets/*.iconset/
+
 # macOS
 .DS_Store
 .AppleDouble
