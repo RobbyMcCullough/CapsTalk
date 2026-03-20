@@ -1,18 +1,18 @@
-# CapTalk dependencies
+# CapsTalk dependencies
 # Install with: pip install -r requirements.txt
 
 # Cross-platform keyboard control (used for sending the record hotkey)
-pynput>=1.7.6
+pynput>=1.7.6,<2
 
 # System tray icon + icon rendering
-pystray>=0.19.4
-Pillow>=10.0.0
+pystray>=0.19.4,<1
+Pillow>=10.0.0,<13
 
 # Windows only: low-level keyboard hook with suppress support
 # (safe to install on macOS too — it just won't be imported there)
-keyboard>=0.13.5
+keyboard>=0.13.5,<1
 
 # macOS only: Python ↔ Objective-C bridge for Quartz / CoreFoundation
 # On Windows this package is not available; the install will skip it gracefully
 # if you use: pip install -r requirements.txt --ignore-requires-python
-pyobjc-framework-Quartz>=9.0; sys_platform == "darwin"
+pyobjc-framework-Quartz>=9.0,<13; sys_platform == "darwin"
