@@ -1,0 +1,85 @@
+name: Build & Release
+
+# Runs when you push a version tag: git tag v1.0.0 && git push origin v1.0.0
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-macos:
+    name: Build macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build .app
+        run: python -m PyInstaller build/captalk_macos.spec
+
+      - name: Zip .app for upload
+        run: cd dist && zip -r CapsTalk-macOS.zip CapsTalk.app
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CapsTalk-macOS
+          path: dist/CapsTalk-macOS.zip
+
+  build-windows:
+    name: Build Windows exe
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build .exe
+        run: python -m PyInstaller build\captalk_windows.spec
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CapsTalk-Windows
+          path: dist\CapsTalk.exe
+
+  release:
+    name: Create GitHub Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: CapsTalk-macOS
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: CapsTalk-Windows
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "CapsTalk ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            CapsTalk-macOS.zip
+            CapsTalk.exe
