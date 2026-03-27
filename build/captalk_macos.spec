@@ -5,7 +5,10 @@ a = Analysis(
     ["../main.py"],
     pathex=[".."],
     binaries=[],
-    datas=[],
+    datas=[
+        # toolbar_icon.png is loaded at runtime by tray.py; must be bundled.
+        ("../assets/toolbar_icon.png", "."),
+    ],
     hiddenimports=[
         # capstalk sub-modules imported dynamically (platform detection, tray)
         "capstalk",
@@ -13,6 +16,7 @@ a = Analysis(
         "capstalk.led_macos",
         "capstalk.hotkey",
         "capstalk.tray",
+        "capstalk.logutil",
         # pynput always needs both platform backends bundled
         "pynput.keyboard._darwin",
         "pynput.mouse._darwin",
