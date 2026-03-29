@@ -1,6 +1,8 @@
 # CapsTalk Configuration
 # Edit this file to customize behavior.
 
+import platform
+
 # ---------------------------------------------------------------------------
 # RECORD KEY
 # The key (or chord) CapsTalk will simulate when Caps Lock is held.
@@ -9,7 +11,10 @@
 # Single key:  RECORD_KEY = "f18"
 # Chord:       RECORD_KEY = ["cmd", "alt", "r"]
 # ---------------------------------------------------------------------------
-RECORD_KEY = ["cmd", "alt", "r"]
+if platform.system() == "Windows":
+    RECORD_KEY = ["ctrl", "alt", "r"]
+else:
+    RECORD_KEY = ["cmd", "alt", "r"]
 
 # ---------------------------------------------------------------------------
 # DOUBLE-TAP WINDOW

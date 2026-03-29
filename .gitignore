@@ -6,6 +6,8 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.venv-macos/
+.venv-windows/
 venv/
 env/
 
@@ -13,6 +15,8 @@ env/
 dist/
 build/*.app
 build/*.exe
+build/captalk_macos/
+build/captalk_windows/
 *.spec.bak
 
 # Icon build intermediates (keep the .icns, not the source iconset)

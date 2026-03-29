@@ -18,6 +18,7 @@ import threading
 
 import config
 from capstalk.hotkey import RecordHotkey
+from capstalk.logutil import log
 
 # ---------------------------------------------------------------------------
 # Platform setup
@@ -34,14 +35,14 @@ if SYSTEM == "Darwin":
             from capstalk.led_macos import set_caps_lock_led
             set_led = set_caps_lock_led
         except Exception as e:
-            print(f"[CapsTalk] LED control unavailable: {e}")
+            log(f"[CapsTalk] LED control unavailable: {e}")
 
 elif SYSTEM == "Windows":
     from capstalk.listener_windows import WindowsListener as Listener
     set_led = None  # Windows: LED follows OS Caps Lock state automatically
 
 else:
-    print(f"[CapsTalk] Unsupported platform: {SYSTEM}")
+    log(f"[CapsTalk] Unsupported platform: {SYSTEM}")
     sys.exit(1)
 
 # ---------------------------------------------------------------------------
@@ -58,21 +59,21 @@ def _fmt_key(k):
 
 
 def on_record_start():
-    print(f"[CapsTalk] ● Recording  (sending {_fmt_key(config.RECORD_KEY)} down)")
+    log(f"[CapsTalk] ● Recording  (sending {_fmt_key(config.RECORD_KEY)} down)")
     hotkey.press()
     if tray:
         tray.set_recording(True)
 
 
 def on_record_stop():
-    print(f"[CapsTalk] ○ Idle       (sending {_fmt_key(config.RECORD_KEY)} up)")
+    log(f"[CapsTalk] ○ Idle       (sending {_fmt_key(config.RECORD_KEY)} up)")
     hotkey.release()
     if tray:
         tray.set_recording(False)
 
 
 def shutdown(*_):
-    print("\n[CapsTalk] Shutting down…")
+    log("\n[CapsTalk] Shutting down…")
     if listener:
         listener.stop()
     if tray:
@@ -95,13 +96,14 @@ def main():
 
     signal.signal(signal.SIGINT, shutdown)
     signal.signal(signal.SIGTERM, shutdown)
-    signal.signal(signal.SIGHUP, shutdown)   # terminal window closed
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, shutdown)   # terminal window closed
 
-    print(f"[CapsTalk] Starting on {SYSTEM}")
-    print(f"  Record key    : {_fmt_key(config.RECORD_KEY)}")
-    print(f"  Double-tap    : {config.DOUBLE_TAP_WINDOW}s window → real Caps Lock")
-    print(f"  LED control   : {'on (mirrors recording state)' if set_led else 'off'}")
-    print()
+    log(f"[CapsTalk] Starting on {SYSTEM}")
+    log(f"  Record key    : {_fmt_key(config.RECORD_KEY)}")
+    log(f"  Double-tap    : {config.DOUBLE_TAP_WINDOW}s window → real Caps Lock")
+    log(f"  LED control   : {'on (mirrors recording state)' if set_led else 'off'}")
+    log()
 
     # Keyboard listener runs in a background thread so the main thread is
     # free for the tray icon (macOS AppKit requires NSStatusBar on main thread).
@@ -133,7 +135,7 @@ def _run_listener(listener):
     try:
         listener.start()
     except RuntimeError as e:
-        print(f"\n[CapsTalk] Fatal: {e}")
+        log(f"\n[CapsTalk] Fatal: {e}")
         import os, signal
         os.kill(os.getpid(), signal.SIGTERM)
 
