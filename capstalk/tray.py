@@ -44,21 +44,39 @@ except ImportError:
 
 def _make_icon(recording: bool) -> Image.Image:
     """
-    Load the toolbar icon and overlay a coloured indicator dot.
+    Draw a microphone icon with a status dot.
 
-    Idle:      green dot  (matches the icon's original design)
-    Recording: red dot    (signals active recording state)
+    Idle:      green dot
+    Recording: red dot
+
+    Drawn procedurally with Pillow — no external image file required.
+    White on transparent background; renders well in macOS dark-mode menu bar.
     """
-    img = Image.open(_asset_path("toolbar_icon.png")).convert("RGBA").resize(
-        (64, 64), Image.LANCZOS
-    )
-
-    # Draw a small indicator dot in the top-left corner (same position as the
-    # green circle in the original artwork).
+    SIZE = 64
+    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    dot_color = (220, 50, 50) if recording else (80, 200, 100)
-    r = 7
-    draw.ellipse([4, 4, 4 + r * 2, 4 + r * 2], fill=dot_color)
+
+    MIC  = (255, 255, 255, 230)   # mic body / stand / base
+    IDLE = (80,  200, 100, 255)   # green dot
+    REC  = (220,  50,  50, 255)   # red dot
+    dot_color = REC if recording else IDLE
+
+    cx = SIZE // 2  # horizontal centre = 32
+
+    # Capsule body
+    draw.rounded_rectangle([cx - 9, 7, cx + 9, 36], radius=9, fill=MIC)
+
+    # U-shaped stand (arc opening upward, beneath capsule)
+    draw.arc([cx - 15, 24, cx + 15, 50], start=0, end=180, fill=MIC, width=3)
+
+    # Vertical stem
+    draw.line([cx, 49, cx, 57], fill=MIC, width=3)
+
+    # Horizontal base
+    draw.line([cx - 11, 57, cx + 11, 57], fill=MIC, width=3)
+
+    # Status dot — bottom-right so it doesn't crowd the mic shape
+    draw.ellipse([43, 43, 59, 59], fill=dot_color)
 
     return img
 

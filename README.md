@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logos/capstalk-banner.png" alt="CapsTalk — Keybind Dictation Tool" width="480">
+  <img src="logos/logo.png" alt="CapsTalk" width="160">
 
   <p>Repurpose your <strong>Caps Lock key</strong> as a push-to-talk trigger for AI dictation apps like&nbsp;<a href="https://wisprflow.ai">Wispr&nbsp;Flow</a>.</p>
 
